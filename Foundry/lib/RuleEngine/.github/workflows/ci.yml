@@ -1,0 +1,36 @@
+name: Foundry CI
+
+on:
+  push:
+    branches: [dev, master, main]
+  pull_request:
+    branches: [dev, master, main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Run Forge install
+        run: forge install
+
+      - name: Setup NodeJS 20.5.0
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.5.0
+
+      - name: Install nodes modules inside CMTAT lib
+        run: npm install
+        working-directory: ./lib/CMTAT
+
+      - name: Run Forge build
+        run: forge build --sizes
+
+      - name: Run Forge tests
+        run: forge test -vvv
