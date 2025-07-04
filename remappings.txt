@@ -1,0 +1,2 @@
+OZ/=lib/openzeppelin-contracts/contracts/
+OZ/=lib/self/contracts/contracts/
