@@ -1,16 +1,16 @@
 import { expect } from "chai";
-import { deploySystemFixtures } from "self/contracts/utils/deployment";
+import { deploySystemFixtures } from "../self/contracts/test/utils/deployment";
 import { DeployedActors } from "@selfxyz/common/utils/types";
 import { ethers } from "hardhat";
 import { CIRCUIT_CONSTANTS } from "@selfxyz/contracts/test/constants/constants";
-import { ATTESTATION_ID } from "self/contracts/test/utils/constants";
-import { generateVcAndDiscloseProof } from "@selfxyz/common/utils/generateProof.js";
+import { ATTESTATION_ID } from "../self/contracts/test/utils/constants";
+import { generateVcAndDiscloseProof } from "../self/contracts/test/utils/generateProof";
 import { poseidon2 } from "poseidon-lite";
 import { generateCommitment } from "@selfxyz/common/utils/passports/passport";
-import { generateRandomFieldElement, splitHexFromBack } from "self/contracts/utils/utils";
+import { generateRandomFieldElement, splitHexFromBack } from "../self/contracts/test/utils/utils";
 import { castFromScope } from "@selfxyz/common/utils/circuits/uuid";
 import { formatCountriesList, reverseBytes } from "@selfxyz/common/utils/circuits/formatInputs";
-import { Formatter } from "self/contracts/utils/formatter";
+import { Formatter } from "../self/contracts/test/utils/formatter";
 import { hashEndpointWithScope } from "@selfxyz/common/utils/scope";
 
 describe("ruleSafe", () => {
