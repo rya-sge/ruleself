@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.30;
+pragma solidity ^0.8.28;
 
 
 // OpenZeppelin
@@ -12,14 +12,14 @@ import {IIdentityVerificationHubV2} from "@selfxyz/contracts/contracts/interface
 import {SelfStructs} from "@selfxyz/contracts/contracts/libraries/SelfStructs.sol";
 import {AttestationId} from "@selfxyz/contracts/contracts/constants/AttestationId.sol";
 /**
- * @title Airdrop V2 (Experimental)
+ * @title RuleSelfVerification (Experimental)
  * @notice This contract manages a RuleEngine Transfer Rule by verifying user registrations with zero‐knowledge proofs
  *         supporting both E-Passport and EU ID Card attestations.
  *         It is provided for testing and demonstration purposes only.
  *         **WARNING:** This contract has not been audited and is NOT intended for production use.
  * @dev Inherits from SelfVerificationRoot V2 for registration logic and Access Control for administrative control.
  */
-contract Airdrop is SelfVerificationRoot, Ownable {
+abstract contract RuleSelfVerification is SelfVerificationRoot, AccessControl {
     // ====================================================
     // Storage Variables
     // ====================================================

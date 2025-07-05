@@ -1,0 +1,9 @@
+[submodule "self"]
+	path = self
+	url = https://github.com/selfxyz/self.git
+[submodule "CMTAT"]
+	path = CMTAT
+	url = https://github.com/CMTA/CMTAT.git
+[submodule "RuleEngine"]
+	path = RuleEngine
+	url = https://github.com/CMTA/RuleEngine.git

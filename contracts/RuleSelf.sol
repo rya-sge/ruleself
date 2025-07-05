@@ -1,24 +1,23 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.30;
+pragma solidity ^0.8.28;
 
-
-
+import "./abstract/RuleSelfVerification.sol";
+import "../lib/RuleValidateTransfer.sol";
 /**
- * @title Airdrop V2 (Experimental)
+ * @title RuleSelf (Experimental)
  * @notice This contract manages a RuleEngine Transfer Rule by verifying user registrations with zero‐knowledge proofs
  *         supporting both E-Passport and EU ID Card attestations.
  *         It is provided for testing and demonstration purposes only.
  *         **WARNING:** This contract has not been audited and is NOT intended for production use.
- * @dev Inherits from SelfVerificationRoot V2 for registration logic and Access Control for administrative control.
+ * @dev Inherits from RuleSelfVerification
  */
-contract Airdrop is SelfVerificationRoot, Ownable {
-       /* ============ Role ============ */
-    bytes32 public constant SANCTIONLIST_ROLE = keccak256("SANCTIONLIST_ROLE");
-
+contract RuleSelf is RuleSelfVerification,  RuleValidateTransfer {
     /* ============ String message ============ */
-    string constant TEXT_ADDRESS_FROM_IS_SANCTIONED =
+    // Text
+    string constant TEXT_CODE_NOT_FOUND = "Unknown restriction code";
+    string constant TEXT_ADDRESS_FROM_IS_NOT_REGISTERED =
         "The sender is not registered";
-    string constant TEXT_ADDRESS_TO_IS_SANCTIONED =
+    string constant TEXT_ADDRESS_TO_IS_NOT_REGISTERED =
         "The recipient is notregistered";
 
     /* ============ Code ============ */
@@ -37,45 +36,42 @@ contract Airdrop is SelfVerificationRoot, Ownable {
      * @param scopeValue The expected proof scope for user registration.
      */
     constructor(
+        address admin,
         address identityVerificationHubAddress,
         uint256 scopeValue
-    ) SelfVerificationRoot(identityVerificationHubAddress, scopeValue) Ownable(_msgSender()) {
+    ) SelfVerificationRoot(identityVerificationHubAddress, scopeValue) {
+        _grantRole(DEFAULT_ADMIN_ROLE, admin);
        
     }
     
 
     /**
      * @notice Check if an addres is in the whitelist or not
-     * @param _from the origin address
-     * @param _to the destination address
+     * @param from the origin address
+     * @param to the destination address
      * @return The restricion code or REJECTED_CODE_BASE.TRANSFER_OK
      **/
     function detectTransferRestriction(
-        address _from,
-        address _to,
+        address from,
+        address to,
         uint256 /*_amount */
     ) public view override returns (uint8) {
-         if (!_registeredUserIdentifiers[uint256(uint160(msg.sender))]) {
-           return uint8(REJECTED_CODE_BASE.TRANSFER_OK);
+         if (!_registeredUserIdentifiers[uint256(uint160(from))]) {
+           return uint8(CODE_ADDRESS_FROM_IS_NOT_REGISTERED);
+        } else if (!_registeredUserIdentifiers[uint256(uint160(to))]){
+            return uint8(CODE_ADDRESS_TO_IS_NOT_REGISTERED);
         }
         return uint8(REJECTED_CODE_BASE.TRANSFER_OK);
     }
 
 
     function detectTransferRestrictionFrom(
-        address spender,
+        address /*spender*/,
         address _from,
         address _to,
         uint256 _amount
     ) public view override returns (uint8) {
-        if(address(sanctionsList) != address(0)){
-            if (sanctionsList.isSanctioned(spender)) {
-                return CODE_ADDRESS_SPENDER_IS_SANCTIONED;
-            } else {
-                return detectTransferRestriction(_from,_to,_amount);
-            }
-        }
-        return uint8(REJECTED_CODE_BASE.TRANSFER_OK);
+        return detectTransferRestriction(_from,_to,_amount);
     }
 
     /**
@@ -87,9 +83,8 @@ contract Airdrop is SelfVerificationRoot, Ownable {
         uint8 _restrictionCode
     ) external pure override returns (bool) {
         return
-            _restrictionCode == CODE_ADDRESS_FROM_IS_SANCTIONED ||
-            _restrictionCode == CODE_ADDRESS_TO_IS_SANCTIONED||
-            _restrictionCode == CODE_ADDRESS_SPENDER_IS_SANCTIONED;
+            _restrictionCode == CODE_ADDRESS_FROM_IS_NOT_REGISTERED ||
+            _restrictionCode == CODE_ADDRESS_TO_IS_NOT_REGISTERED;
     }
 
     /**
@@ -100,12 +95,10 @@ contract Airdrop is SelfVerificationRoot, Ownable {
     function messageForTransferRestriction(
         uint8 _restrictionCode
     ) external pure override returns (string memory) {
-        if (_restrictionCode == CODE_ADDRESS_FROM_IS_SANCTIONED) {
-            return TEXT_ADDRESS_FROM_IS_SANCTIONED;
-        } else if (_restrictionCode == CODE_ADDRESS_TO_IS_SANCTIONED) {
-            return TEXT_ADDRESS_TO_IS_SANCTIONED;
-        } else if (_restrictionCode == CODE_ADDRESS_SPENDER_IS_SANCTIONED) {
-            return TEXT_ADDRESS_SPENDER_IS_SANCTIONED;
+        if (_restrictionCode == CODE_ADDRESS_FROM_IS_NOT_REGISTERED) {
+            return TEXT_ADDRESS_FROM_IS_NOT_REGISTERED;
+        } else if (_restrictionCode == CODE_ADDRESS_TO_IS_NOT_REGISTERED) {
+            return TEXT_ADDRESS_TO_IS_NOT_REGISTERED;
         } else {
             return TEXT_CODE_NOT_FOUND;
         }
