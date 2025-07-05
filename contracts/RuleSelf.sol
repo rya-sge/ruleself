@@ -38,10 +38,11 @@ contract RuleSelf is RuleSelfVerification,  RuleValidateTransfer {
     constructor(
         address admin,
         address identityVerificationHubAddress,
+        bytes32 configId_,
         uint256 scopeValue
     ) SelfVerificationRoot(identityVerificationHubAddress, scopeValue) {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
-       
+        _setConfigId(configId_);
     }
     
 

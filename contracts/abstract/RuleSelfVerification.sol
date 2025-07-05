@@ -27,6 +27,9 @@ abstract contract RuleSelfVerification is SelfVerificationRoot, AccessControl {
     /// @notice Indicates whether the registration phase is active.
     bool public isRegistrationOpen;
 
+    /// @notice config Id
+    bytes32 public configId;
+
     /// @notice Maps nullifiers to user identifiers for registration tracking
     mapping(uint256 nullifier => uint256 userIdentifier) internal _nullifierToUserIdentifier;
 
@@ -120,6 +123,26 @@ abstract contract RuleSelfVerification is SelfVerificationRoot, AccessControl {
         return _registeredUserIdentifiers[uint256(uint160(registeredAddress))];
     }
 
+   
+    /**
+    * @notice set the Self config Id
+    */
+    function setConfigId(bytes32 _configId) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _setConfigId(_configId);
+    }
+
+    function _setConfigId(bytes32 _configId) internal {
+        configId = _configId;
+    }
+
+    function getConfigId(
+        bytes32 destinationChainId,
+        bytes32 userIdentifier, 
+        bytes memory userDefinedData
+    ) public view override returns (bytes32) {
+        return configId;
+    }
+
     // ====================================================
     // Internal Functions
     // ====================================================
@@ -157,6 +180,14 @@ abstract contract RuleSelfVerification is SelfVerificationRoot, AccessControl {
             revert UserIdentifierAlreadyRegistered();
         }
 
+                // Access verified data:
+        // output.userIdentifier - user's unique identifier
+        // output.name - verified name
+        // output.nationality - verified nationality
+        // output.dateOfBirth - verified birth date
+        // etc
+        
+        // Example: Simple verification check
         _nullifierToUserIdentifier[output.nullifier] = output.userIdentifier;
         _registeredUserIdentifiers[output.userIdentifier] = true;
 
