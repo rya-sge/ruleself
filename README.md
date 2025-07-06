@@ -58,7 +58,7 @@ Schema showing the interaction between a token holder and a CMTAT token with a c
 
 A same `RuleSelf`and `RuleEngine`can be used for several different tokens.
 
-![self-CMTAT.drawio](../RuleSelf/doc/self-CMTAT.drawio.png)
+![self-CMTAT.drawio](./doc/self-CMTAT.drawio.png)
 
 
 
@@ -68,7 +68,7 @@ A same `RuleSelf`and `RuleEngine`can be used for several different tokens.
 
 
 
-![self-ruleSelf.drawio](../RuleSelf/doc/self-ruleSelf.drawio.png)
+![self-ruleSelf.drawio](./doc/self-ruleSelf.drawio.png)
 
 ## Details
 
@@ -226,15 +226,15 @@ function _setConfigId(bytes32 _configId) internal {
 
 The [Self Configuration Tools](https://tools.self.xyz/)  allows to create  a verification configuration and generates a config ID. This tool allows you to configure age requirements, country restrictions, and OFAC checks with a user-friendly interface. A contract representing the configuration will be deployed by the tool
 
-![AgeVerification](../RuleSelf/assets/AgeVerification.png)
+![AgeVerification](./assets/AgeVerification.png)
 
-![countries](../RuleSelf/assets/countries.png)
+![countries](./assets/countries.png)
 
 
 
-![OFAC](../RuleSelf/assets/OFAC.png)
+![OFAC](./assets/OFAC.png)
 
-![config-deployment](../RuleSelf/assets/config-deployment.png)
+![config-deployment](./assets/config-deployment.png)
 
 Reference:
 
@@ -314,11 +314,11 @@ function setScope(uint256 _scope) external onlyOwner {
 
 After deployment, use the [Self Configuration Tools](https://tools.self.xyz/) to calculate the actual scope with your deployed contract address and update it using the setter function.
 
-![scope](../RuleSelf/assets/scope.png)
+![scope](./assets/scope.png)
 
 Once we have the scope, we set the value inside the smart contract
 
-![smart-contract-set-scope](../RuleSelf/assets/smart-contract-set-scope.png)
+![smart-contract-set-scope](./assets/smart-contract-set-scope.png)
 
 
 
@@ -360,6 +360,18 @@ Taken from the [Aidrop contract example](https://github.com/selfxyz/self/blob/ma
         return _registeredUserIdentifiers[uint256(uint160(registeredAddress))];
     }
 ```
+
+
+
+### Result
+
+The contract `RuleSelf` is deployed on Celo testnet at the following address: [0xcadbe20e16d68c7abbb3a109a18fc3709ed49fdc](https://alfajores.celoscan.io/address/0xcadbe20e16d68c7abbb3a109a18fc3709ed49fdc)
+
+
+
+First `Verify Self Proof` function calls: https://alfajores.celoscan.io/tx/0xac3ca7de3bd89a5223b6fb55a318942aa5e5576b9afc73c12ff3c635edcfa7f6
+
+
 
 
 
