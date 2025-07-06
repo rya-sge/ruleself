@@ -180,7 +180,7 @@ abstract contract RuleSelfVerification is SelfVerificationRoot, AccessControl {
             revert UserIdentifierAlreadyRegistered();
         }
 
-                // Access verified data:
+        // Access verified data:
         // output.userIdentifier - user's unique identifier
         // output.name - verified name
         // output.nationality - verified nationality
@@ -194,14 +194,6 @@ abstract contract RuleSelfVerification is SelfVerificationRoot, AccessControl {
         // Emit registration event
         emit UserIdentifierRegistered(output.userIdentifier, output.nullifier);
     }
-
-    /*function changeUserIdentifierAddress(address newIdentifier) {
-        if (!_registeredUserIdentifiers[uint256(uint160(msg.sender))]) {
-            revert NotRegistered(msg.sender);
-        } else {
-            _registeredUserIdentifiers = uint256(uint160(msg.sender))
-        }
-    }*/
 
 
 }

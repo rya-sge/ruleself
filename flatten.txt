@@ -1,0 +1,2217 @@
+
+
+// Sources flattened with hardhat v2.25.0 https://hardhat.org
+
+// SPDX-License-Identifier: MIT AND MPL-2.0
+
+// File @openzeppelin/contracts/access/IAccessControl.sol@v5.3.0
+
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v5.3.0) (access/IAccessControl.sol)
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev External interface of AccessControl declared to support ERC-165 detection.
+ */
+interface IAccessControl {
+    /**
+     * @dev The `account` is missing a role.
+     */
+    error AccessControlUnauthorizedAccount(address account, bytes32 neededRole);
+
+    /**
+     * @dev The caller of a function is not the expected one.
+     *
+     * NOTE: Don't confuse with {AccessControlUnauthorizedAccount}.
+     */
+    error AccessControlBadConfirmation();
+
+    /**
+     * @dev Emitted when `newAdminRole` is set as ``role``'s admin role, replacing `previousAdminRole`
+     *
+     * `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite
+     * {RoleAdminChanged} not being emitted to signal this.
+     */
+    event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole);
+
+    /**
+     * @dev Emitted when `account` is granted `role`.
+     *
+     * `sender` is the account that originated the contract call. This account bears the admin role (for the granted role).
+     * Expected in cases where the role was granted using the internal {AccessControl-_grantRole}.
+     */
+    event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender);
+
+    /**
+     * @dev Emitted when `account` is revoked `role`.
+     *
+     * `sender` is the account that originated the contract call:
+     *   - if using `revokeRole`, it is the admin role bearer
+     *   - if using `renounceRole`, it is the role bearer (i.e. `account`)
+     */
+    event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender);
+
+    /**
+     * @dev Returns `true` if `account` has been granted `role`.
+     */
+    function hasRole(bytes32 role, address account) external view returns (bool);
+
+    /**
+     * @dev Returns the admin role that controls `role`. See {grantRole} and
+     * {revokeRole}.
+     *
+     * To change a role's admin, use {AccessControl-_setRoleAdmin}.
+     */
+    function getRoleAdmin(bytes32 role) external view returns (bytes32);
+
+    /**
+     * @dev Grants `role` to `account`.
+     *
+     * If `account` had not been already granted `role`, emits a {RoleGranted}
+     * event.
+     *
+     * Requirements:
+     *
+     * - the caller must have ``role``'s admin role.
+     */
+    function grantRole(bytes32 role, address account) external;
+
+    /**
+     * @dev Revokes `role` from `account`.
+     *
+     * If `account` had been granted `role`, emits a {RoleRevoked} event.
+     *
+     * Requirements:
+     *
+     * - the caller must have ``role``'s admin role.
+     */
+    function revokeRole(bytes32 role, address account) external;
+
+    /**
+     * @dev Revokes `role` from the calling account.
+     *
+     * Roles are often managed via {grantRole} and {revokeRole}: this function's
+     * purpose is to provide a mechanism for accounts to lose their privileges
+     * if they are compromised (such as when a trusted device is misplaced).
+     *
+     * If the calling account had been granted `role`, emits a {RoleRevoked}
+     * event.
+     *
+     * Requirements:
+     *
+     * - the caller must be `callerConfirmation`.
+     */
+    function renounceRole(bytes32 role, address callerConfirmation) external;
+}
+
+
+// File @openzeppelin/contracts/utils/Context.sol@v5.3.0
+
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v5.0.1) (utils/Context.sol)
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev Provides information about the current execution context, including the
+ * sender of the transaction and its data. While these are generally available
+ * via msg.sender and msg.data, they should not be accessed in such a direct
+ * manner, since when dealing with meta-transactions the account sending and
+ * paying for execution may not be the actual sender (as far as an application
+ * is concerned).
+ *
+ * This contract is only required for intermediate, library-like contracts.
+ */
+abstract contract Context {
+    function _msgSender() internal view virtual returns (address) {
+        return msg.sender;
+    }
+
+    function _msgData() internal view virtual returns (bytes calldata) {
+        return msg.data;
+    }
+
+    function _contextSuffixLength() internal view virtual returns (uint256) {
+        return 0;
+    }
+}
+
+
+// File @openzeppelin/contracts/utils/introspection/IERC165.sol@v5.3.0
+
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v5.1.0) (utils/introspection/IERC165.sol)
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev Interface of the ERC-165 standard, as defined in the
+ * https://eips.ethereum.org/EIPS/eip-165[ERC].
+ *
+ * Implementers can declare support of contract interfaces, which can then be
+ * queried by others ({ERC165Checker}).
+ *
+ * For an implementation, see {ERC165}.
+ */
+interface IERC165 {
+    /**
+     * @dev Returns true if this contract implements the interface defined by
+     * `interfaceId`. See the corresponding
+     * https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[ERC section]
+     * to learn more about how these ids are created.
+     *
+     * This function call must use less than 30 000 gas.
+     */
+    function supportsInterface(bytes4 interfaceId) external view returns (bool);
+}
+
+
+// File @openzeppelin/contracts/utils/introspection/ERC165.sol@v5.3.0
+
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v5.1.0) (utils/introspection/ERC165.sol)
+
+pragma solidity ^0.8.20;
+
+/**
+ * @dev Implementation of the {IERC165} interface.
+ *
+ * Contracts that want to implement ERC-165 should inherit from this contract and override {supportsInterface} to check
+ * for the additional interface id that will be supported. For example:
+ *
+ * ```solidity
+ * function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+ *     return interfaceId == type(MyInterface).interfaceId || super.supportsInterface(interfaceId);
+ * }
+ * ```
+ */
+abstract contract ERC165 is IERC165 {
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId) public view virtual returns (bool) {
+        return interfaceId == type(IERC165).interfaceId;
+    }
+}
+
+
+// File @openzeppelin/contracts/access/AccessControl.sol@v5.3.0
+
+// Original license: SPDX_License_Identifier: MIT
+// OpenZeppelin Contracts (last updated v5.3.0) (access/AccessControl.sol)
+
+pragma solidity ^0.8.20;
+
+
+
+/**
+ * @dev Contract module that allows children to implement role-based access
+ * control mechanisms. This is a lightweight version that doesn't allow enumerating role
+ * members except through off-chain means by accessing the contract event logs. Some
+ * applications may benefit from on-chain enumerability, for those cases see
+ * {AccessControlEnumerable}.
+ *
+ * Roles are referred to by their `bytes32` identifier. These should be exposed
+ * in the external API and be unique. The best way to achieve this is by
+ * using `public constant` hash digests:
+ *
+ * ```solidity
+ * bytes32 public constant MY_ROLE = keccak256("MY_ROLE");
+ * ```
+ *
+ * Roles can be used to represent a set of permissions. To restrict access to a
+ * function call, use {hasRole}:
+ *
+ * ```solidity
+ * function foo() public {
+ *     require(hasRole(MY_ROLE, msg.sender));
+ *     ...
+ * }
+ * ```
+ *
+ * Roles can be granted and revoked dynamically via the {grantRole} and
+ * {revokeRole} functions. Each role has an associated admin role, and only
+ * accounts that have a role's admin role can call {grantRole} and {revokeRole}.
+ *
+ * By default, the admin role for all roles is `DEFAULT_ADMIN_ROLE`, which means
+ * that only accounts with this role will be able to grant or revoke other
+ * roles. More complex role relationships can be created by using
+ * {_setRoleAdmin}.
+ *
+ * WARNING: The `DEFAULT_ADMIN_ROLE` is also its own admin: it has permission to
+ * grant and revoke this role. Extra precautions should be taken to secure
+ * accounts that have been granted it. We recommend using {AccessControlDefaultAdminRules}
+ * to enforce additional security measures for this role.
+ */
+abstract contract AccessControl is Context, IAccessControl, ERC165 {
+    struct RoleData {
+        mapping(address account => bool) hasRole;
+        bytes32 adminRole;
+    }
+
+    mapping(bytes32 role => RoleData) private _roles;
+
+    bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
+
+    /**
+     * @dev Modifier that checks that an account has a specific role. Reverts
+     * with an {AccessControlUnauthorizedAccount} error including the required role.
+     */
+    modifier onlyRole(bytes32 role) {
+        _checkRole(role);
+        _;
+    }
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return interfaceId == type(IAccessControl).interfaceId || super.supportsInterface(interfaceId);
+    }
+
+    /**
+     * @dev Returns `true` if `account` has been granted `role`.
+     */
+    function hasRole(bytes32 role, address account) public view virtual returns (bool) {
+        return _roles[role].hasRole[account];
+    }
+
+    /**
+     * @dev Reverts with an {AccessControlUnauthorizedAccount} error if `_msgSender()`
+     * is missing `role`. Overriding this function changes the behavior of the {onlyRole} modifier.
+     */
+    function _checkRole(bytes32 role) internal view virtual {
+        _checkRole(role, _msgSender());
+    }
+
+    /**
+     * @dev Reverts with an {AccessControlUnauthorizedAccount} error if `account`
+     * is missing `role`.
+     */
+    function _checkRole(bytes32 role, address account) internal view virtual {
+        if (!hasRole(role, account)) {
+            revert AccessControlUnauthorizedAccount(account, role);
+        }
+    }
+
+    /**
+     * @dev Returns the admin role that controls `role`. See {grantRole} and
+     * {revokeRole}.
+     *
+     * To change a role's admin, use {_setRoleAdmin}.
+     */
+    function getRoleAdmin(bytes32 role) public view virtual returns (bytes32) {
+        return _roles[role].adminRole;
+    }
+
+    /**
+     * @dev Grants `role` to `account`.
+     *
+     * If `account` had not been already granted `role`, emits a {RoleGranted}
+     * event.
+     *
+     * Requirements:
+     *
+     * - the caller must have ``role``'s admin role.
+     *
+     * May emit a {RoleGranted} event.
+     */
+    function grantRole(bytes32 role, address account) public virtual onlyRole(getRoleAdmin(role)) {
+        _grantRole(role, account);
+    }
+
+    /**
+     * @dev Revokes `role` from `account`.
+     *
+     * If `account` had been granted `role`, emits a {RoleRevoked} event.
+     *
+     * Requirements:
+     *
+     * - the caller must have ``role``'s admin role.
+     *
+     * May emit a {RoleRevoked} event.
+     */
+    function revokeRole(bytes32 role, address account) public virtual onlyRole(getRoleAdmin(role)) {
+        _revokeRole(role, account);
+    }
+
+    /**
+     * @dev Revokes `role` from the calling account.
+     *
+     * Roles are often managed via {grantRole} and {revokeRole}: this function's
+     * purpose is to provide a mechanism for accounts to lose their privileges
+     * if they are compromised (such as when a trusted device is misplaced).
+     *
+     * If the calling account had been revoked `role`, emits a {RoleRevoked}
+     * event.
+     *
+     * Requirements:
+     *
+     * - the caller must be `callerConfirmation`.
+     *
+     * May emit a {RoleRevoked} event.
+     */
+    function renounceRole(bytes32 role, address callerConfirmation) public virtual {
+        if (callerConfirmation != _msgSender()) {
+            revert AccessControlBadConfirmation();
+        }
+
+        _revokeRole(role, callerConfirmation);
+    }
+
+    /**
+     * @dev Sets `adminRole` as ``role``'s admin role.
+     *
+     * Emits a {RoleAdminChanged} event.
+     */
+    function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
+        bytes32 previousAdminRole = getRoleAdmin(role);
+        _roles[role].adminRole = adminRole;
+        emit RoleAdminChanged(role, previousAdminRole, adminRole);
+    }
+
+    /**
+     * @dev Attempts to grant `role` to `account` and returns a boolean indicating if `role` was granted.
+     *
+     * Internal function without access restriction.
+     *
+     * May emit a {RoleGranted} event.
+     */
+    function _grantRole(bytes32 role, address account) internal virtual returns (bool) {
+        if (!hasRole(role, account)) {
+            _roles[role].hasRole[account] = true;
+            emit RoleGranted(role, account, _msgSender());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @dev Attempts to revoke `role` from `account` and returns a boolean indicating if `role` was revoked.
+     *
+     * Internal function without access restriction.
+     *
+     * May emit a {RoleRevoked} event.
+     */
+    function _revokeRole(bytes32 role, address account) internal virtual returns (bool) {
+        if (hasRole(role, account)) {
+            _roles[role].hasRole[account] = false;
+            emit RoleRevoked(role, account, _msgSender());
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+
+// File @selfxyz/contracts/contracts/constants/AttestationId.sol@v1.2.0
+
+// Original license: SPDX_License_Identifier: MIT
+pragma solidity 0.8.28;
+
+/**
+ * @title AttestationId Library
+ * @notice This library provides attestation identifiers used across contracts.
+ * @dev Currently, it contains the constant E_PASSPORT which represents the identifier
+ * for an E-PASSPORT attestation computed as Poseidon("E-PASSPORT").
+ */
+library AttestationId {
+    /**
+     * @notice Identifier for an E-PASSPORT attestation.
+     * @dev The identifier is computed based on the hash of "E-PASSPORT" using the Poseidon hash function.
+     * Here it is hardcoded as bytes32(uint256(1)) for demonstration purposes.
+     */
+    bytes32 constant E_PASSPORT = bytes32(uint256(1));
+    bytes32 constant EU_ID_CARD = bytes32(uint256(2));
+}
+
+
+// File @selfxyz/contracts/contracts/constants/CircuitConstantsV2.sol@v1.2.0
+
+// Original license: SPDX_License_Identifier: MIT
+pragma solidity 0.8.28;
+
+/**
+ * @title Circuit Constants Library
+ * @notice This library defines constants representing indices used to access public signals
+ *         of various circuits such as register, DSC, and VC/Disclose.
+ * @dev These indices map directly to specific data fields in the corresponding circuits proofs.
+ */
+library CircuitConstantsV2 {
+    // ---------------------------
+    // Register Circuit Constants
+    // ---------------------------
+
+    /**
+     * @notice Index to access the nullifier in the register circuit public signals.
+     */
+    uint256 constant REGISTER_NULLIFIER_INDEX = 0;
+
+    /**
+     * @notice Index to access the commitment in the register circuit public signals.
+     */
+    uint256 constant REGISTER_COMMITMENT_INDEX = 1;
+
+    /**
+     * @notice Index to access the Merkle root in the register circuit public signals.
+     */
+    uint256 constant REGISTER_MERKLE_ROOT_INDEX = 2;
+
+    // ---------------------------
+    // DSC Circuit Constants
+    // ---------------------------
+
+    /**
+     * @notice Index to access the tree leaf in the DSC circuit public signals.
+     */
+    uint256 constant DSC_TREE_LEAF_INDEX = 0;
+
+    /**
+     * @notice Index to access the CSCA root in the DSC circuit public signals.
+     */
+    uint256 constant DSC_CSCA_ROOT_INDEX = 1;
+
+    // -------------------------------------
+    // VC and Disclose Circuit Constants
+    // -------------------------------------
+
+    /**
+     * @notice Structure containing circuit indices for a specific attestation type.
+     */
+    struct DiscloseIndices {
+        uint256 revealedDataPackedIndex;
+        uint256 forbiddenCountriesListPackedIndex;
+        uint256 nullifierIndex;
+        uint256 attestationIdIndex;
+        uint256 merkleRootIndex;
+        uint256 currentDateIndex;
+        uint256 namedobSmtRootIndex;
+        uint256 nameyobSmtRootIndex;
+        uint256 scopeIndex;
+        uint256 userIdentifierIndex;
+        uint256 passportNoSmtRootIndex; // Only for passport, 99 for ID card
+    }
+
+    /**
+     * @notice Returns the circuit indices for a given attestation type.
+     * @param attestationId The attestation identifier.
+     * @return indices The DiscloseIndices struct containing all relevant indices.
+     */
+    function getDiscloseIndices(bytes32 attestationId) internal pure returns (DiscloseIndices memory indices) {
+        if (attestationId == AttestationId.E_PASSPORT) {
+            return
+                DiscloseIndices({
+                    revealedDataPackedIndex: 0,
+                    forbiddenCountriesListPackedIndex: 3,
+                    nullifierIndex: 7,
+                    attestationIdIndex: 8,
+                    merkleRootIndex: 9,
+                    currentDateIndex: 10,
+                    namedobSmtRootIndex: 17,
+                    nameyobSmtRootIndex: 18,
+                    scopeIndex: 19,
+                    userIdentifierIndex: 20,
+                    passportNoSmtRootIndex: 16
+                });
+        } else if (attestationId == AttestationId.EU_ID_CARD) {
+            return
+                DiscloseIndices({
+                    revealedDataPackedIndex: 0,
+                    forbiddenCountriesListPackedIndex: 4,
+                    nullifierIndex: 8,
+                    attestationIdIndex: 9,
+                    merkleRootIndex: 10,
+                    currentDateIndex: 11,
+                    namedobSmtRootIndex: 17,
+                    nameyobSmtRootIndex: 18,
+                    scopeIndex: 19,
+                    userIdentifierIndex: 20,
+                    passportNoSmtRootIndex: 99
+                });
+        } else {
+            revert("Invalid attestation ID");
+        }
+    }
+}
+
+
+// File @selfxyz/contracts/contracts/interfaces/IDscCircuitVerifier.sol@v1.2.0
+
+// Original license: SPDX_License_Identifier: MIT
+pragma solidity 0.8.28;
+
+/**
+ * @title IDscCircuitVerifier
+ * @notice Interface for verifying zero-knowledge proofs related to the DSC circuit.
+ * @dev This interface defines the structure of a DSC circuit proof and exposes a function to verify such proofs.
+ */
+interface IDscCircuitVerifier {
+    /**
+     * @notice Represents a DSC circuit proof.
+     * @param a An array of two unsigned integers representing the proof component 'a'.
+     * @param b A 2x2 array of unsigned integers representing the proof component 'b'.
+     * @param c An array of two unsigned integers representing the proof component 'c'.
+     * @param pubSignals An array of two unsigned integers representing the public signals associated with the proof.
+     */
+    struct DscCircuitProof {
+        uint[2] a;
+        uint[2][2] b;
+        uint[2] c;
+        uint[2] pubSignals;
+    }
+
+    /**
+     * @notice Verifies a given DSC circuit zero-knowledge proof.
+     * @dev This function checks the validity of the provided DSC proof parameters.
+     * @param pA The 'a' component of the proof.
+     * @param pB The 'b' component of the proof.
+     * @param pC The 'c' component of the proof.
+     * @param pubSignals The public signals associated with the proof.
+     * @return A boolean value indicating whether the provided proof is valid (true) or not (false).
+     */
+    function verifyProof(
+        uint[2] calldata pA,
+        uint[2][2] calldata pB,
+        uint[2] calldata pC,
+        uint[2] calldata pubSignals
+    ) external view returns (bool);
+}
+
+
+// File @selfxyz/contracts/contracts/interfaces/IRegisterCircuitVerifier.sol@v1.2.0
+
+// Original license: SPDX_License_Identifier: MIT
+pragma solidity 0.8.28;
+/**
+ * @title IRegisterCircuitVerifier
+ * @notice Interface for verifying register circuit proofs.
+ * @dev This interface defines the structure of a register circuit proof and exposes a function to verify such proofs.
+ */
+interface IRegisterCircuitVerifier {
+    /**
+     * @notice Represents a register circuit proof.
+     * @dev This structure encapsulates the required proof elements.
+     * @param a An array of two unsigned integers representing the proof component 'a'.
+     * @param b A 2x2 array of unsigned integers representing the proof component 'b'.
+     * @param c An array of two unsigned integers representing the proof component 'c'.
+     * @param pubSignals An array of three unsigned integers representing the public signals associated with the proof.
+     */
+    struct RegisterCircuitProof {
+        uint[2] a;
+        uint[2][2] b;
+        uint[2] c;
+        uint[3] pubSignals;
+    }
+
+    /**
+     * @notice Verifies a given register circuit proof.
+     * @dev This function checks the validity of the provided proof parameters.
+     * @param a The 'a' component of the proof.
+     * @param b The 'b' component of the proof.
+     * @param c The 'c' component of the proof.
+     * @param pubSignals The public signals associated with the proof.
+     * @return isValid A boolean value indicating whether the provided proof is valid (true) or not (false).
+     */
+    function verifyProof(
+        uint[2] calldata a,
+        uint[2][2] calldata b,
+        uint[2] calldata c,
+        uint[3] calldata pubSignals
+    ) external view returns (bool isValid);
+}
+
+
+// File @selfxyz/contracts/contracts/libraries/SelfStructs.sol@v1.2.0
+
+// Original license: SPDX_License_Identifier: MIT
+pragma solidity 0.8.28;
+
+/**
+ * @title SelfStructs
+ * @dev Library containing data structures for Self protocol identity verification
+ * @notice Defines structs for passport verification, EU ID verification, and generic disclosure outputs
+ */
+library SelfStructs {
+    /**
+     * @dev Header structure for Hub input containing contract version and scope information
+     * @param contractVersion Version of the contract being used
+     * @param scope Scope identifier for the verification request
+     * @param attestationId Unique identifier for the attestation
+     */
+    struct HubInputHeader {
+        uint8 contractVersion;
+        uint256 scope;
+        bytes32 attestationId;
+    }
+
+    /**
+     * @dev Output structure for passport verification results
+     * @param attestationId Unique identifier for the attestation
+     * @param revealedDataPacked Packed binary data of revealed information
+     * @param userIdentifier Unique identifier for the user
+     * @param nullifier Cryptographic nullifier to prevent double-spending
+     * @param forbiddenCountriesListPacked Packed list of forbidden countries (4 uint256 array)
+     */
+    struct PassportOutput {
+        uint256 attestationId;
+        bytes revealedDataPacked;
+        uint256 userIdentifier;
+        uint256 nullifier;
+        uint256[4] forbiddenCountriesListPacked;
+    }
+
+    /**
+     * @dev Output structure for EU ID verification results
+     * @param attestationId Unique identifier for the attestation
+     * @param revealedDataPacked Packed binary data of revealed information
+     * @param userIdentifier Unique identifier for the user
+     * @param nullifier Cryptographic nullifier to prevent double-spending
+     * @param forbiddenCountriesListPacked Packed list of forbidden countries (4 uint256 array)
+     */
+    struct EuIdOutput {
+        uint256 attestationId;
+        bytes revealedDataPacked;
+        uint256 userIdentifier;
+        uint256 nullifier;
+        uint256[4] forbiddenCountriesListPacked;
+    }
+
+    /// @dev OFAC verification mode: Passport number only
+    uint256 constant passportNoOfac = 0;
+    /// @dev OFAC verification mode: Name and date of birth
+    uint256 constant nameAndDobOfac = 1;
+    /// @dev OFAC verification mode: Name and year of birth
+    uint256 constant nameAndYobOfac = 2;
+
+    /**
+     * @dev Generic disclosure output structure (Version 2) with detailed personal information
+     * @param attestationId Unique identifier for the attestation
+     * @param userIdentifier Unique identifier for the user
+     * @param nullifier Cryptographic nullifier to prevent double-spending
+     * @param forbiddenCountriesListPacked Packed list of forbidden countries (4 uint256 array)
+     * @param issuingState Country or state that issued the document
+     * @param name Array of name components (first, middle, last names)
+     * @param idNumber Government-issued identification number
+     * @param nationality Nationality of the document holder
+     * @param dateOfBirth Date of birth in string format
+     * @param gender Gender of the document holder
+     * @param expiryDate Document expiration date in string format
+     * @param olderThan Minimum age verification result
+     * @param ofac Array of OFAC (Office of Foreign Assets Control) verification results for different modes
+     */
+    struct GenericDiscloseOutputV2 {
+        bytes32 attestationId;
+        uint256 userIdentifier;
+        uint256 nullifier;
+        uint256[4] forbiddenCountriesListPacked;
+        string issuingState;
+        string[] name;
+        string idNumber;
+        string nationality;
+        string dateOfBirth;
+        string gender;
+        string expiryDate;
+        uint256 olderThan;
+        bool[3] ofac;
+    }
+
+    /**
+     * @dev Verification configuration structure (Version 1)
+     * @param olderThanEnabled Whether minimum age verification is enabled
+     * @param olderThan Minimum age requirement
+     * @param forbiddenCountriesEnabled Whether forbidden countries check is enabled
+     * @param forbiddenCountriesListPacked Packed list of forbidden countries (4 uint256 array)
+     * @param ofacEnabled Array of boolean flags for different OFAC verification modes
+     */
+    struct VerificationConfigV1 {
+        bool olderThanEnabled;
+        uint256 olderThan;
+        bool forbiddenCountriesEnabled;
+        uint256[4] forbiddenCountriesListPacked;
+        bool[3] ofacEnabled;
+    }
+
+    /**
+     * @dev Verification configuration structure (Version 2)
+     * @param olderThanEnabled Whether minimum age verification is enabled
+     * @param olderThan Minimum age requirement
+     * @param forbiddenCountriesEnabled Whether forbidden countries check is enabled
+     * @param forbiddenCountriesListPacked Packed list of forbidden countries (4 uint256 array)
+     * @param ofacEnabled Array of boolean flags for different OFAC verification modes
+     */
+    struct VerificationConfigV2 {
+        bool olderThanEnabled;
+        uint256 olderThan;
+        bool forbiddenCountriesEnabled;
+        uint256[4] forbiddenCountriesListPacked;
+        bool[3] ofacEnabled;
+    }
+}
+
+
+// File @selfxyz/contracts/contracts/interfaces/IIdentityVerificationHubV2.sol@v1.2.0
+
+// Original license: SPDX_License_Identifier: MIT
+pragma solidity 0.8.28;
+
+
+
+/**
+ * @title IIdentityVerificationHubV2
+ * @notice Interface for the Identity Verification Hub V2 for verifying zero-knowledge proofs.
+ * @dev Defines all external and public functions from IdentityVerificationHubImplV2.
+ */
+interface IIdentityVerificationHubV2 {
+    // ====================================================
+    // External Functions
+    // ====================================================
+
+    /**
+     * @notice Registers a commitment using a register circuit proof.
+     * @dev Verifies the register circuit proof and then calls the Identity Registry to register the commitment.
+     * @param attestationId The attestation ID.
+     * @param registerCircuitVerifierId The identifier for the register circuit verifier to use.
+     * @param registerCircuitProof The register circuit proof data.
+     */
+    function registerCommitment(
+        bytes32 attestationId,
+        uint256 registerCircuitVerifierId,
+        IRegisterCircuitVerifier.RegisterCircuitProof memory registerCircuitProof
+    ) external;
+
+    /**
+     * @notice Registers a DSC key commitment using a DSC circuit proof.
+     * @dev Verifies the DSC proof and then calls the Identity Registry to register the dsc key commitment.
+     * @param attestationId The attestation ID.
+     * @param dscCircuitVerifierId The identifier for the DSC circuit verifier to use.
+     * @param dscCircuitProof The DSC circuit proof data.
+     */
+    function registerDscKeyCommitment(
+        bytes32 attestationId,
+        uint256 dscCircuitVerifierId,
+        IDscCircuitVerifier.DscCircuitProof memory dscCircuitProof
+    ) external;
+
+    /**
+     * @notice Sets verification config in V2 storage (owner only)
+     * @dev The configId is automatically generated from the config content using sha256(abi.encode(config))
+     * @param config The verification configuration
+     * @return configId The generated config ID
+     */
+    function setVerificationConfigV2(
+        SelfStructs.VerificationConfigV2 memory config
+    ) external returns (bytes32 configId);
+
+    /**
+     * @notice Main verification function with new structured input format
+     * @param baseVerificationInput The base verification input data
+     * @param userContextData The user context data
+     */
+    function verify(bytes calldata baseVerificationInput, bytes calldata userContextData) external;
+
+    /**
+     * @notice Updates the registry address.
+     * @param attestationId The attestation ID.
+     * @param registryAddress The new registry address.
+     */
+    function updateRegistry(bytes32 attestationId, address registryAddress) external;
+
+    /**
+     * @notice Updates the VC and Disclose circuit verifier address.
+     * @param attestationId The attestation ID.
+     * @param vcAndDiscloseCircuitVerifierAddress The new VC and Disclose circuit verifier address.
+     */
+    function updateVcAndDiscloseCircuit(bytes32 attestationId, address vcAndDiscloseCircuitVerifierAddress) external;
+
+    /**
+     * @notice Updates the register circuit verifier for a specific signature type.
+     * @param attestationId The attestation identifier.
+     * @param typeId The signature type identifier.
+     * @param verifierAddress The new register circuit verifier address.
+     */
+    function updateRegisterCircuitVerifier(bytes32 attestationId, uint256 typeId, address verifierAddress) external;
+
+    /**
+     * @notice Updates the DSC circuit verifier for a specific signature type.
+     * @param attestationId The attestation identifier.
+     * @param typeId The signature type identifier.
+     * @param verifierAddress The new DSC circuit verifier address.
+     */
+    function updateDscVerifier(bytes32 attestationId, uint256 typeId, address verifierAddress) external;
+
+    /**
+     * @notice Batch updates register circuit verifiers.
+     * @param attestationIds An array of attestation identifiers.
+     * @param typeIds An array of signature type identifiers.
+     * @param verifierAddresses An array of new register circuit verifier addresses.
+     */
+    function batchUpdateRegisterCircuitVerifiers(
+        bytes32[] calldata attestationIds,
+        uint256[] calldata typeIds,
+        address[] calldata verifierAddresses
+    ) external;
+
+    /**
+     * @notice Batch updates DSC circuit verifiers.
+     * @param attestationIds An array of attestation identifiers.
+     * @param typeIds An array of signature type identifiers.
+     * @param verifierAddresses An array of new DSC circuit verifier addresses.
+     */
+    function batchUpdateDscCircuitVerifiers(
+        bytes32[] calldata attestationIds,
+        uint256[] calldata typeIds,
+        address[] calldata verifierAddresses
+    ) external;
+
+    // ====================================================
+    // External View Functions
+    // ====================================================
+
+    /**
+     * @notice Returns the registry address for a given attestation ID.
+     * @param attestationId The attestation ID to query.
+     * @return The registry address associated with the attestation ID.
+     */
+    function registry(bytes32 attestationId) external view returns (address);
+
+    /**
+     * @notice Returns the disclose verifier address for a given attestation ID.
+     * @param attestationId The attestation ID to query.
+     * @return The disclose verifier address associated with the attestation ID.
+     */
+    function discloseVerifier(bytes32 attestationId) external view returns (address);
+
+    /**
+     * @notice Returns the register circuit verifier address for a given attestation ID and type ID.
+     * @param attestationId The attestation ID to query.
+     * @param typeId The type ID to query.
+     * @return The register circuit verifier address associated with the attestation ID and type ID.
+     */
+    function registerCircuitVerifiers(bytes32 attestationId, uint256 typeId) external view returns (address);
+
+    /**
+     * @notice Returns the DSC circuit verifier address for a given attestation ID and type ID.
+     * @param attestationId The attestation ID to query.
+     * @param typeId The type ID to query.
+     * @return The DSC circuit verifier address associated with the attestation ID and type ID.
+     */
+    function dscCircuitVerifiers(bytes32 attestationId, uint256 typeId) external view returns (address);
+
+    /**
+     * @notice Returns the merkle root timestamp for a given attestation ID and root.
+     * @param attestationId The attestation ID to query.
+     * @param root The merkle root to query.
+     * @return The merkle root timestamp associated with the attestation ID and root.
+     */
+    function rootTimestamp(bytes32 attestationId, uint256 root) external view returns (uint256);
+
+    /**
+     * @notice Returns the identity commitment merkle root for a given attestation ID.
+     * @param attestationId The attestation ID to query.
+     * @return The identity commitment merkle root associated with the attestation ID.
+     */
+    function getIdentityCommitmentMerkleRoot(bytes32 attestationId) external view returns (uint256);
+
+    /**
+     * @notice Checks if a verification config exists
+     * @param configId The configuration identifier
+     * @return exists Whether the config exists
+     */
+    function verificationConfigV2Exists(bytes32 configId) external view returns (bool exists);
+
+    // ====================================================
+    // Public Functions
+    // ====================================================
+
+    /**
+     * @notice Generates a config ID from a verification config
+     * @param config The verification configuration
+     * @return The generated config ID (sha256 hash of encoded config)
+     */
+    function generateConfigId(SelfStructs.VerificationConfigV2 memory config) external pure returns (bytes32);
+}
+
+
+// File @selfxyz/contracts/contracts/interfaces/ISelfVerificationRoot.sol@v1.2.0
+
+// Original license: SPDX_License_Identifier: MIT
+pragma solidity 0.8.28;
+
+/**
+ * @title ISelfVerificationRoot
+ * @notice Interface for self-verification infrastructure integration
+ * @dev Provides base functionality for verifying and disclosing identity credentials
+ */
+interface ISelfVerificationRoot {
+    /**
+     * @notice Structure containing proof data for disclose circuits
+     * @dev Contains the proof elements required for zero-knowledge verification
+     * @param a First proof element
+     * @param b Second proof element (2x2 matrix)
+     * @param c Third proof element
+     * @param pubSignals Array of 21 public signals for the circuit
+     */
+    struct DiscloseCircuitProof {
+        uint256[2] a;
+        uint256[2][2] b;
+        uint256[2] c;
+        uint256[21] pubSignals;
+    }
+
+    /**
+     * @notice Structure containing verified identity disclosure output data
+     * @dev Contains all disclosed identity information after successful verification
+     * @param attestationId Unique identifier for the identity documents
+     * @param userIdentifier Unique identifier for the user
+     * @param nullifier Unique nullifier to prevent double-spending
+     * @param forbiddenCountriesListPacked Packed representation of forbidden countries list
+     * @param issuingState The state/country that issued the identity document
+     * @param name Array of name components
+     * @param idNumber The identity document number
+     * @param nationality The nationality of the document holder
+     * @param dateOfBirth Date of birth in string format
+     * @param gender Gender of the document holder
+     * @param expiryDate Expiry date of the identity document
+     * @param olderThan Verified age threshold (e.g., 18 for adult verification)
+     * @param ofac Array of OFAC (Office of Foreign Assets Control) compliance flags
+     */
+    struct GenericDiscloseOutputV2 {
+        bytes32 attestationId;
+        uint256 userIdentifier;
+        uint256 nullifier;
+        uint256[4] forbiddenCountriesListPacked;
+        string issuingState;
+        string[] name;
+        string idNumber;
+        string nationality;
+        string dateOfBirth;
+        string gender;
+        string expiryDate;
+        uint256 olderThan;
+        bool[3] ofac;
+    }
+
+    /**
+     * @notice Verifies a self-proof using the bytes-based interface
+     * @dev Parses relayer data format and validates against contract settings before calling hub V2
+     * @param proofPayload Packed data from relayer in format: | 32 bytes attestationId | proof data |
+     * @param userContextData User-defined data in format: | 32 bytes configId | 32 bytes destChainId | 32 bytes userIdentifier | data |
+     */
+    function verifySelfProof(bytes calldata proofPayload, bytes calldata userContextData) external;
+
+    /**
+     * @notice Callback function called upon successful verification
+     * @dev Only the identity verification hub V2 contract should call this function
+     * @param output The verification output data containing disclosed identity information
+     * @param userData The user-defined data passed through the verification process
+     */
+    function onVerificationSuccess(bytes memory output, bytes memory userData) external;
+}
+
+
+// File @selfxyz/contracts/contracts/abstract/SelfVerificationRoot.sol@v1.2.0
+
+// Original license: SPDX_License_Identifier: MIT
+pragma solidity 0.8.28;
+
+
+
+
+/**
+ * @title SelfVerificationRoot
+ * @notice Abstract base contract to be integrated with self's verification infrastructure
+ * @dev Provides base functionality for verifying and disclosing identity credentials
+ * @author Self Team
+ */
+abstract contract SelfVerificationRoot is ISelfVerificationRoot {
+    // ====================================================
+    // Constants
+    // ====================================================
+
+    /// @notice Contract version identifier used in verification process
+    /// @dev This version is included in the hub data for protocol compatibility
+    uint8 constant CONTRACT_VERSION = 2;
+
+    // ====================================================
+    // Storage Variables
+    // ====================================================
+
+    /// @notice The scope value that proofs must match
+    /// @dev Used to validate that submitted proofs match the expected scope
+    uint256 internal _scope;
+
+    /// @notice Reference to the identity verification hub V2 contract
+    /// @dev Immutable reference used for bytes-based proof verification
+    IIdentityVerificationHubV2 internal immutable _identityVerificationHubV2;
+
+    // ====================================================
+    // Errors
+    // ====================================================
+
+    /// @notice Error thrown when the data format is invalid
+    /// @dev Triggered when the provided bytes data doesn't have the expected format
+    error InvalidDataFormat();
+
+    /// @notice Error thrown when onVerificationSuccess is called by an unauthorized address
+    /// @dev Only the identity verification hub V2 contract can call onVerificationSuccess
+    error UnauthorizedCaller();
+
+    // ====================================================
+    // Events
+    // ====================================================
+
+    /// @notice Emitted when the scope is updated
+    /// @param newScope The new scope value that was set
+    event ScopeUpdated(uint256 indexed newScope);
+
+    /**
+     * @notice Initializes the SelfVerificationRoot contract
+     * @dev Sets up the immutable reference to the hub contract and initial scope
+     * @param identityVerificationHubV2Address The address of the Identity Verification Hub V2
+     * @param scopeValue The expected proof scope for user registration
+     */
+    constructor(address identityVerificationHubV2Address, uint256 scopeValue) {
+        _identityVerificationHubV2 = IIdentityVerificationHubV2(identityVerificationHubV2Address);
+        _scope = scopeValue;
+    }
+
+    /**
+     * @notice Returns the current scope value
+     * @dev Public view function to access the current scope setting
+     * @return The scope value that proofs must match
+     */
+    function scope() public view returns (uint256) {
+        return _scope;
+    }
+
+    /**
+     * @notice Updates the scope value
+     * @dev Protected internal function to change the expected scope for proofs
+     * @param newScope The new scope value to set
+     */
+    function _setScope(uint256 newScope) internal {
+        _scope = newScope;
+        emit ScopeUpdated(newScope);
+    }
+
+    /**
+     * @notice Verifies a self-proof using the bytes-based interface
+     * @dev Parses relayer data format and validates against contract settings before calling hub V2
+     * @param proofPayload Packed data from relayer in format: | 32 bytes attestationId | proof data |
+     * @param userContextData User-defined data in format: | 32 bytes destChainId | 32 bytes userIdentifier | data |
+     * @custom:data-format proofPayload = | 32 bytes attestationId | proofData |
+     * @custom:data-format userContextData = | 32 bytes destChainId | 32 bytes userIdentifier | data |
+     * @custom:data-format hubData = | 1 bytes contract version | 31 bytes buffer | 32 bytes scope | 32 bytes attestationId | proofData |
+     */
+    function verifySelfProof(bytes calldata proofPayload, bytes calldata userContextData) public {
+        // Minimum expected length for proofData: 32 bytes attestationId + proof data
+        if (proofPayload.length < 32) {
+            revert InvalidDataFormat();
+        }
+
+        // Minimum userDefinedData length: 32 (destChainId) + 32 (userIdentifier) + 0 (userDefinedData) = 64 bytes
+        if (userContextData.length < 64) {
+            revert InvalidDataFormat();
+        }
+
+        bytes32 attestationId;
+        assembly {
+            // Load attestationId from the beginning of proofData (first 32 bytes)
+            attestationId := calldataload(proofPayload.offset)
+        }
+
+        bytes32 destinationChainId = bytes32(userContextData[0:32]);
+        bytes32 userIdentifier = bytes32(userContextData[32:64]);
+        bytes memory userDefinedData = userContextData[64:];
+
+        bytes32 configId = getConfigId(destinationChainId, userIdentifier, userDefinedData);
+
+        // Hub data should be | 1 byte contractVersion | 31 bytes buffer | 32 bytes scope | 32 bytes attestationId | proof data
+        bytes memory baseVerificationInput = abi.encodePacked(
+            // 1 byte contractVersion
+            CONTRACT_VERSION,
+            // 31 bytes buffer (all zeros)
+            bytes31(0),
+            // 32 bytes scope
+            _scope,
+            // 32 bytes attestationId
+            attestationId,
+            // proof data (starts after 32 bytes attestationId)
+            proofPayload[32:]
+        );
+
+        // Call hub V2 verification
+        _identityVerificationHubV2.verify(baseVerificationInput, bytes.concat(configId, userContextData));
+    }
+
+    /**
+     * @notice Callback function called upon successful verification by the hub contract
+     * @dev Only callable by the identity verification hub V2 contract for security
+     * @param output The verification output data containing disclosed identity information
+     * @param userData The user-defined data passed through the verification process
+     * @custom:security Only the authorized hub contract can call this function
+     * @custom:flow This function decodes the output and calls the customizable verification hook
+     */
+    function onVerificationSuccess(bytes memory output, bytes memory userData) public {
+        // Only allow the identity verification hub V2 to call this function
+        if (msg.sender != address(_identityVerificationHubV2)) {
+            revert UnauthorizedCaller();
+        }
+
+        ISelfVerificationRoot.GenericDiscloseOutputV2 memory genericDiscloseOutput = abi.decode(
+            output,
+            (ISelfVerificationRoot.GenericDiscloseOutputV2)
+        );
+
+        // Call the customizable verification hook
+        customVerificationHook(genericDiscloseOutput, userData);
+    }
+
+    /**
+     * @notice Generates a configId for the user
+     * @dev This function should be overridden by the implementing contract to provide custom configId logic
+     * @param destinationChainId The destination chain ID
+     * @param userIdentifier The user identifier
+     * @param userDefinedData The user defined data
+     * @return The configId
+     */
+    function getConfigId(
+        bytes32 destinationChainId,
+        bytes32 userIdentifier,
+        bytes memory userDefinedData
+    ) public view virtual returns (bytes32) {
+        // Default implementation reverts; must be overridden in derived contract
+        revert("SelfVerificationRoot: getConfigId must be overridden");
+    }
+
+    /**
+     * @notice Custom verification hook that can be overridden by implementing contracts
+     * @dev This function is called after successful verification and hub address validation
+     * @param output The verification output data from the hub containing disclosed identity information
+     * @param userData The user-defined data passed through the verification process
+     * @custom:override Override this function in derived contracts to add custom verification logic
+     * @custom:security This function is only called after proper authentication by the hub contract
+     */
+    function customVerificationHook(
+        ISelfVerificationRoot.GenericDiscloseOutputV2 memory output,
+        bytes memory userData
+    ) internal virtual {
+        // Default implementation is empty - override in derived contracts to add custom logic
+    }
+}
+
+
+// File CMTAT/contracts/interfaces/tokenization/IERC3643Partial.sol
+
+// Original license: SPDX_License_Identifier: MPL-2.0
+
+/**
+* Note:
+* Parameter names may differ slightly from the original ERC3643 spec 
+* to align with OpenZeppelin v5.3.0 naming conventions 
+* (e.g., `amount` → `value`).
+*/ 
+
+pragma solidity ^0.8.20;
+
+/**
+ * @title IERC3643Pause
+ * @dev Interface for pausing and unpausing token transfers.
+ * Common interface shared between CMTAT and ERC3643 implementations.
+ *
+ */
+interface IERC3643Pause {
+    /**
+     * @notice Indicates whether the contract is currently paused.
+     * @dev When paused, token transfers are disabled.
+     * @return True if the contract is paused, false otherwise.
+     */
+    function paused() external view returns (bool);
+    /**
+     * @notice Pauses all token transfers.
+     * @dev Once paused, calls to transfer-related functions will revert.
+     * Can only be called by an account with the appropriate permission.
+     *
+     * Emits a {Paused} event.
+     */
+    function pause() external;
+
+    /**
+     * @notice Unpauses token transfers.
+     * @dev Restores normal token transfer behavior after a pause.
+     * Can only be called by an account with the appropriate permission.
+     *
+     * Emits an {Unpaused} event.
+     */
+    function unpause() external;
+} 
+/**
+ * @title ERC-3643 Base Interface for ERC-20 Token Metadata
+ * @dev Provides functions to update token name and symbol.
+ */
+interface IERC3643ERC20Base {
+    /**
+     * @notice Updates the name of the token.
+     * @dev Can be used to rename the token post-deployment.
+     * @param name The new name to assign to the token.
+     */
+    function setName(string calldata name) external;
+
+    /**
+     * @notice Updates the symbol of the token.
+     * @dev Can be used to change the token's symbol (e.g. for branding or reissuance).
+     * @param symbol The new symbol to assign to the token.
+     */
+    function setSymbol(string calldata symbol) external;
+}
+
+/**
+ * @title IERC3643BatchTransfer
+ * @notice Interface for batch token transfers under the ERC-3643 standard.
+ */
+interface IERC3643BatchTransfer {
+     /**
+     * @notice Transfers tokens to multiple recipient addresses in a single transaction.
+     * @dev 
+     * Batch version of `transfer`
+     * - Each recipient receives the number of tokens specified in the `values` array.
+     * Requirement:
+     * - The `tos` array must not be empty.
+     * - `tos.length` must equal `values.length`.
+     * - `tos`cannot contain a zero address
+     * - the caller must have a balance cooresponding to the total values
+     * Events:
+     * - Emits one `Transfer` event per recipient (i.e., `tos.length` total).
+     * 
+     * Enforcement-specific behavior:
+     * - If `IERC3643Enforcement` is implemented: 
+     *   - The sender (`msg.sender`) and each recipient in `tos` MUST NOT be frozen.
+     * - If `IERC3643ERC20Enforcement` is implemented:
+     *   - The total amount transferred MUST NOT exceed the sender's available (unfrozen) balance.
+     *
+     * Note: This implementation differs from the base ERC-3643 specification by returning a `bool`
+     *       value for compatibility with the ERC-20 `transfer` function semantics.
+     *
+     * @param tos The list of recipient addresses.
+     * @param values The list of token amounts corresponding to each recipient.
+     * @return success_ A boolean indicating whether the batch transfer was successful.
+     */
+    function batchTransfer(address[] calldata tos,uint256[] calldata values) external returns (bool success_);
+}
+
+/**
+ * @title IERC3643Base
+ * @notice Interface to retrieve version
+ */
+interface IERC3643Base {
+     /**
+     * @notice Returns the current version of the token contract.
+     * @dev This value is useful to know which smart contract version has been used
+     * @return version_ A string representing the version of the token implementation (e.g., "1.0.0").
+     */
+    function version() external view returns (string memory version_);
+}
+
+/**
+ * @title IERC3643EnforcementEvent
+ * @notice Interface defining the event for account freezing and unfreezing.
+ */
+interface IERC3643EnforcementEvent {
+    /**
+     * @notice Emitted when an account's frozen status is changed.
+     * @dev 
+     * - `account` is the address whose status changed.
+     * - `isFrozen` reflects the new status after the function execution:
+     *    - `true`: account is frozen.
+     *    - `false`: account is unfrozen.
+     * - `enforcer` is the address that executed the freezing/unfreezing.
+     * - `data` provides optional contextual information for auditing or documentation purposes.
+     * The event is emitted by `setAddressFrozen` and `batchSetAddressFrozen` functions
+     * Note: This event extends the ERC-3643 specification by including the `data` field.
+     * 
+     * @param account The address that was frozen or unfrozen.
+     * @param isFrozen The resulting freeze status of the account.
+     * @param enforcer The address that initiated the change.
+     * @param data Additional data related to the freezing action.
+     */
+    event AddressFrozen(address indexed account, bool indexed isFrozen, address indexed enforcer, bytes data);
+}
+
+/**
+ * @title IERC3643Enforcement
+ * @notice Interface for account-level freezing logic.
+ * @dev Provides methods to check and update whether an address is frozen.
+ */
+interface IERC3643Enforcement {
+    /**
+     * @notice Checks whether a given account is currently frozen.
+     * @param account The address to query.
+     * @return isFrozen_ A boolean indicating if the account is frozen (`true`) or not (`false`).
+     */
+    function isFrozen(address account) external view returns (bool isFrozen_);
+    /**
+     * @notice Sets the frozen status of a specific address.
+     * @dev Emits an `AddressFrozen` event.
+     * @param account The address whose frozen status is being updated.
+     * @param freeze The new frozen status (`true` to freeze, `false` to unfreeze).
+     */
+    function setAddressFrozen(address account, bool freeze) external;
+    /**
+     * @notice Batch version of {setAddressFrozen}, allowing multiple addresses to be updated in one call.
+     * @param accounts An array of addresses to update.
+     * @param freeze An array of corresponding frozen statuses for each address.
+     * Requirements:
+     * - `accounts.length` must be equal to `freeze.length`.
+     */
+    function batchSetAddressFrozen(address[] calldata accounts, bool[] calldata freeze) external;
+}
+
+/**
+ * @title IERC3643ERC20Enforcement
+ * @notice Interface for enforcing partial token freezes and forced transfers, typically used in compliance-sensitive ERC-1400 scenarios.
+ * @dev For event definitions, see {IERC7551ERC20Enforcement}.
+ */
+interface IERC3643ERC20Enforcement {
+    /* ============ View Functions ============ */
+    /**
+     * @notice Returns the number of tokens that are currently frozen (i.e., non-transferable) for a given account.
+     * @dev The frozen amount is always less than or equal to the total balance of the account.
+     * @param account The address of the wallet being queried.
+     * @return frozenBalance_ The amount of frozen tokens held by the account.
+     */
+    function getFrozenTokens(address account) external view returns (uint256 frozenBalance_);
+
+
+    /* ============ State Functions ============ */
+
+    /**
+     * @notice Freezes a specific amount of tokens for a given account.
+     * @dev Emits a `TokensFrozen` event. Prevents the frozen amount from being transferred.
+     * @param account The wallet address whose tokens are to be frozen.
+     * @param value The amount of tokens to freeze.
+     */
+    function freezePartialTokens(address account, uint256 value) external;
+ 
+     /**
+     *  @notice unfreezes token amount specified for given address
+     *  @dev Emits a TokensUnfrozen event
+     *  @param account The address for which to update frozen tokens
+     *  @param value Amount of Tokens to be unfrozen
+     */
+    function unfreezePartialTokens(address account, uint256 value) external;
+    /**
+     *  
+     *  @notice Triggers a forced transfer.
+     *  @dev 
+*    *  Force a transfer of tokens between 2 token holders
+     *  If IERC364320Enforcement is implemented:
+     *      Require that the total value should not exceed available balance.
+     *      In case the `from` address has not enough free tokens (unfrozen tokens)
+     *      but has a total balance higher or equal to the `amount`
+     *      the amount of frozen tokens is reduced in order to have enough free tokens
+     *      to proceed the transfer, in such a case, the remaining balance on the `from`
+     *      account is 100% composed of frozen tokens post-transfer.
+     *      emits a `TokensUnfrozen` event if `value` is higher than the free balance of `from`
+     *  Emits a `Transfer` event
+     *  @param from The address of the token holder
+     *  @param to The address of the receiver
+     *  @param value amount of tokens to transfer
+     *  @return success_ `true` if successful and revert if unsuccessful
+
+     */
+    function forcedTransfer(address from, address to, uint256 value) external returns (bool success_);
+
+}
+/**
+* @title IERC3643Mint — Token Minting Interface
+* @dev Interface for mintint ERC-20 compatible tokens under the ERC-3643 standard.
+* Implements both single and batch mint functionalities, with support for frozen address logic if enforced.
+*/
+interface IERC3643Mint{
+    /**
+     * @notice Creates (`mints`) a specified `value` of tokens and assigns them to the `account`.
+     * @dev Tokens are minted by transferring them from the zero address (`address(0)`).
+     * Emits a {Mint} event and a {Transfer} event with `from` set to `address(0)`.
+     * Requirement:
+     * Account must not be the zero address.
+     * @param account The address that will receive the newly minted tokens. 
+     * @param value The amount of tokens to mint to `account`.
+     */
+    function mint(address account, uint256 value) external;
+    /**
+     * @notice Batch version of {mint}, allowing multiple mint operations in a single transaction.
+     * @dev
+     * For each mint action:
+     *   - Emits a {Mint} event.
+     *   - Emits a {Transfer} event with `from` set to the zero address.
+     * - Requires that `accounts` and `values` arrays have the same length.
+     * - None of the addresses in `accounts` can be the zero address.
+     * - Be cautious with large arrays as the transaction may run out of gas.
+     * @param accounts The list of recipient addresses for the minted tokens.
+     * @param values The respective amounts of tokens to mint for each recipient.
+     */
+    function batchMint( address[] calldata accounts,uint256[] calldata values) external;
+}
+
+/**
+* @title IERC3643Burn — Token Burning Interface
+* @dev Interface for burning ERC-20 compatible tokens under the ERC-3643 standard.
+* Implements both single and batch burn functionalities, with support for frozen token logic if enforced.
+*/
+interface IERC3643Burn{
+     /**
+     * @notice Burns a specified amount of tokens from a given account by transferring them to `address(0)`.
+     * @dev 
+     * - Decreases the total token supply by the specified `value`.
+     * - Emits a `Transfer` event to indicate the burn (with `to` set to `address(0)`).
+     * - If `IERC364320Enforcement` is implemented:
+     *   - If the account has insufficient free (unfrozen) tokens but a sufficient total balance, 
+     *     frozen tokens are reduced to complete the burn.
+     *   - The remaining balance on the account will consist entirely of frozen tokens after the burn.
+     *   - Emits a `TokensUnfrozen` event if frozen tokens are unfrozen to allow the burn.
+     * 
+     * @param account The address from which tokens will be burned.
+     * @param value The amount of tokens to burn.
+     */
+    function burn(address account,uint256 value) external;
+    /**
+     * @notice Performs a batch burn operation, removing tokens from multiple accounts in a single transaction.
+     * @dev 
+     * - Batch version of {burn}
+     * - Executes the burn operation for each account in the `accounts` array, using corresponding amounts in the `values` array.
+     * - Emits a `Transfer` event for each burn (with `to` set to `address(0)`).
+     * - This operation is gas-intensive and may fail if the number of accounts (`accounts.length`) is too large, causing an "out of gas" error.
+     * - Use with caution to avoid unnecessary transaction fees.
+     * Requirement:
+     *  - `accounts` and `values` must have the same length
+     * @param accounts An array of addresses from which tokens will be burned.
+     * @param values An array of token amounts to burn, corresponding to each address in `accounts`.
+     */
+    function batchBurn(address[] calldata accounts,uint256[] calldata values) external;
+}
+
+interface IERC3643ComplianceRead {
+    /**
+     * @notice Returns true if the transfer is valid, and false otherwise.
+     * @dev Don't check the balance and the user's right (access control)
+     */
+    function canTransfer(
+        address from,
+        address to,
+        uint256 value
+    ) external view returns (bool isValid);
+}
+
+interface IERC3643IComplianceContract {
+    /**
+     *  @notice
+     *  Function called whenever tokens are transferred
+     *  from one wallet to another
+     *  @dev 
+     *  This function can be used to update state variables of the compliance contract
+     *  This function can be called ONLY by the token contract bound to the compliance
+     *  @param from The address of the sender
+     *  @param to The address of the receiver
+     *  @param value value of tokens involved in the transfer
+     */
+    function transferred(address from, address to, uint256 value) external;
+}
+
+
+// File CMTAT/contracts/interfaces/tokenization/draft-IERC7551.sol
+
+// Original license: SPDX_License_Identifier: MPL-2.0
+
+pragma solidity ^0.8.20;
+
+
+/**
+ * @title IERC7551Mint
+ * @dev Interface for token minting operations. 
+ */
+interface IERC7551Mint {
+     /**
+     * @notice Emitted when new tokens are minted and assigned to an account.
+     * @param minter The address that initiated the mint operation.
+     * @param account The address receiving the newly minted tokens.
+     * @param value The amount of tokens created.
+     * @param data Optional metadata associated with the mint (e.g., reason, reference ID).
+     */
+    event Mint(address indexed minter, address indexed account, uint256 value, bytes data);
+    /**
+     * @notice Creates a `value` amount of tokens and assigns them to `account`, by transferring it from address(0)
+     * @dev
+     * - Increases the total supply of tokens.
+     * - Emits both a `Mint` event and a standard ERC-20 `Transfer` event (with `from` set to the zero address).
+     * - The `data` parameter can be used to attach off-chain metadata or audit information.
+     * - If {IERC7551Pause} is implemented:
+     *   - Token issuance MUST NOT be blocked by paused transfer state.
+     * Requirements:
+     * - `account` cannot be the zero address
+     * @param account The address that will receive the newly minted tokens.
+     * @param value The amount of tokens to mint.
+     * @param data Additional contextual data to include with the mint (optional).
+     */
+    function mint(address account, uint256 value, bytes calldata data) external;
+}
+
+/**
+* @title interface for burn operation
+*/
+interface IERC7551Burn {
+     /**
+     * @notice Emitted when tokens are burned from an account.
+     * @param burner The address that initiated the burn.
+     * @param account The address from which tokens were burned.
+     * @param value The amount of tokens burned.
+     * @param data Additional data related to the burn.
+     */
+    event Burn(address indexed burner, address indexed account, uint256 value, bytes data);
+   
+    /**
+     * @notice Burns a specific number of tokens from the given account by transferring it to address(0)
+     * @dev 
+     * - The account's balance is decreased by the specified amount.
+     * - Emits a `Burn` event and a standard `Transfer` event with `to` set to `address(0)`.
+     * - If the account balance (including frozen tokens) is less than the burn amount, the transaction MUST revert.
+     * - If the token contract supports {IERC7551Pause}, paused transfers MUST NOT prevent this burn operation.
+     * - The `data` parameter MAY be used to provide additional context (e.g., audit trail or documentation).
+     * @param account The address whose tokens will be burned.
+     * @param amount The number of tokens to remove from circulation.
+     * @param data Arbitrary additional data to document the burn.
+     */
+    function burn(address account, uint256 amount, bytes calldata data) external;
+}
+
+interface IERC7551Pause {
+    /**
+     * @notice Returns true if token transfers are currently paused.
+     * @return True if paused, false otherwise.
+     * @dev  
+     * If this function returns true, it MUST NOT be possible to transfer tokens to other accounts 
+     * and the function canTransfer() MUST return false.
+     */
+    function paused() external view returns (bool);
+    /**
+     * @notice Pauses token transfers.
+     * @dev Reverts if already paused.
+          * Emits a `Paused` event
+     */
+    function pause() external;
+    /**
+     * @notice Unpauses token transfers.
+     * @dev Reverts if token is not in pause state.
+     * emits an `Unpaused` event
+     */
+    function unpause() external;
+}
+interface IERC7551ERC20EnforcementEvent {
+    /**
+     * @notice Emitted when a forced transfer or burn occurs.
+     * @param enforcer The address that initiated the enforcement.
+     * @param account The address affected by the enforcement.
+     * @param amount The number of tokens involved.
+     * @param data Additional data related to the enforcement.
+     */
+    event Enforcement (address indexed enforcer, address indexed account, uint256 amount, bytes data);
+}
+
+interface IERC7551ERC20EnforcementTokenFrozenEvent {
+    /**
+     * @notice Emitted when a specific amount of tokens are frozen on an address.
+     * @param account The address whose tokens are frozen.
+     * @param value The number of tokens frozen.
+     * @param data Additional data related to the freezing action.
+     *  @dev
+     *  Same name as ERC-3643 but with a supplementary data parameter
+     *  The event is emitted by freezePartialTokens and batchFreezePartialTokens functions
+     */
+    event TokensFrozen(address indexed account, uint256 value, bytes data);
+
+    /**
+     * @notice Emitted when a specific amount of tokens are unfrozen on an address.
+     * @param account The address whose tokens are unfrozen.
+     * @param value The number of tokens unfrozen.
+     * @param data Additional data related to the unfreezing action.
+     * @dev 
+     * Same name as ERC-3643 but with a supplementary data parameter
+     * The event is emitted by `unfreezePartialTokens`, `batchUnfreezePartialTokens`and potentially `forcedTransfer` functions
+     */
+    event TokensUnfrozen(address indexed account, uint256 value, bytes data);
+}
+
+interface IERC7551ERC20Enforcement {
+     /* ============ View Functions ============ */
+    /**
+     * @notice Returns the active (unfrozen) token balance of a given account.
+     * @param account The address to query.
+     * @return activeBalance_ The amount of tokens that can be transferred using standard ERC-20 functions.
+     */
+    function getActiveBalanceOf(address account) external view returns (uint256 activeBalance_);
+
+
+    /**
+     * @notice Returns the frozen token balance of a given account.
+     * @dev Frozen tokens cannot be transferred using standard ERC-20 functions.
+     * Implementations MAY support transferring frozen tokens using other mechanisms like `forcedTransfer`.
+     * If the active balance is insufficient to cover a transfer, `canTransfer` and `canTransferFrom` MUST return false.
+     * @param account The address to query.
+     * @return frozenBalance_ The amount of tokens that are frozen and non-transferable via ERC-20 `transfer` and `transferFrom`.
+     */
+    function getFrozenTokens(address account) external view returns (uint256 frozenBalance_);
+    
+     /* ============ State Functions ============ */
+    /**
+     * @notice Freezes a specified amount of tokens for a given account.
+     * @dev Emits a `TokensFrozen` event.
+     * @param account The address whose tokens will be frozen.
+     * @param amount The number of tokens to freeze.
+     * @param data Arbitrary additional data for logging or business logic.
+     */
+    function freezePartialTokens(address account, uint256 amount, bytes memory data) external;
+    
+
+    /**
+     * @notice Unfreezes a specified amount of tokens for a given account.
+     * @dev Emits a `TokensUnfrozen` event.
+     * @param account The address whose tokens will be unfrozen.
+     * @param amount The number of tokens to unfreeze.
+     * @param data Arbitrary additional data for logging or business logic.
+     */
+    function unfreezePartialTokens(address account, uint256 amount, bytes memory data) external;
+    /**
+     * @notice Executes a forced transfer of tokens from one account to another.
+     * @dev Transfers `value` tokens from `account` to `to` without requiring the account’s consent.
+     * If the `account` does not have enough active (unfrozen) tokens, frozen tokens may be automatically unfrozen to fulfill the transfer.
+     * Emits a `Transfer` event. Emits a `TokensUnfrozen` event if frozen tokens are used.
+     * @param account The address to debit tokens from.
+     * @param to The address to credit tokens to.
+     * @param value The amount of tokens to transfer.
+     * @param data Optional additional metadata to accompany the transfer.
+     * @return success_ Returns true if the transfer was successful.
+     */
+    function forcedTransfer(address account, address to, uint256 value, bytes calldata data) external returns (bool success_);
+}
+
+interface IERC7551Compliance is IERC3643ComplianceRead {
+     /**
+     * @notice Checks if `spender` can transfer `value` tokens from `from` to `to` under compliance rules.
+     * @dev Does not check balances or access rights (Access Control).
+     * @param spender The address performing the transfer.
+     * @param from The source address.
+     * @param to The destination address.
+     * @param value The number of tokens to transfer.
+     * @return isCompliant True if the transfer complies with policy.
+     */
+    function canTransferFrom(
+        address spender,
+        address from,
+        address to,
+        uint256 value
+    )  external view returns (bool);
+}
+
+interface IERC7551Document {
+    /**
+     * @notice Returns the hash of the "Terms" document.
+     * @return hash_ The `bytes32` hash of the terms document.
+     */
+    function termsHash() external view returns (bytes32 hash_);
+
+    /**
+     * @notice Sets the terms hash and URI.
+     * @param _hash The new hash of the document.
+     * @param _uri The corresponding URI.
+     */
+    function setTerms(bytes32 _hash, string calldata _uri) external;
+
+    /**
+    * @notice Returns the metadata string (e.g. URL).
+    * @return metadata_ The metadata string.
+    */
+    function metaData() external view returns (string memory metadata_);
+
+    /**
+    * @notice Sets a new metadata string (e.g. URL).
+    * @param metaData_ The new metadata value.
+    */
+    function setMetaData(string calldata metaData_) external;
+}
+
+
+// File contracts/abstract/RuleSelfVerification.sol
+
+// Original license: SPDX_License_Identifier: MIT
+pragma solidity ^0.8.28;
+
+
+// OpenZeppelin
+
+// self
+
+
+
+
+
+/**
+ * @title RuleSelfVerification (Experimental)
+ * @notice This contract manages a RuleEngine Transfer Rule by verifying user registrations with zero‐knowledge proofs
+ *         supporting both E-Passport and EU ID Card attestations.
+ *         It is provided for testing and demonstration purposes only.
+ *         **WARNING:** This contract has not been audited and is NOT intended for production use.
+ * @dev Inherits from SelfVerificationRoot V2 for registration logic and Access Control for administrative control.
+ */
+abstract contract RuleSelfVerification is SelfVerificationRoot, AccessControl {
+    // ====================================================
+    // Storage Variables
+    // ====================================================
+
+    /// @notice Indicates whether the registration phase is active.
+    bool public isRegistrationOpen;
+
+    /// @notice config Id
+    bytes32 public configId;
+
+    /// @notice Maps nullifiers to user identifiers for registration tracking
+    mapping(uint256 nullifier => uint256 userIdentifier) internal _nullifierToUserIdentifier;
+
+    /// @notice Maps user identifiers to registration status
+    mapping(uint256 userIdentifier => bool registered) internal _registeredUserIdentifiers;
+
+    // ====================================================
+    // Errors
+    // ====================================================
+
+    /// @notice Reverts when an unregistered address attempts to claim tokens.
+    error NotRegistered(address nonRegisteredAddress);
+
+    /// @notice Reverts when registration is attempted while the registration phase is closed.
+    error RegistrationNotOpen();
+
+    /// @notice Reverts when a claim attempt is made while registration is still open.
+    error RegistrationNotClosed();
+
+
+    /// @notice Reverts when an invalid user identifier is provided.
+    error InvalidUserIdentifier();
+
+    /// @notice Reverts when a user identifier has already been registered
+    error UserIdentifierAlreadyRegistered();
+
+    /// @notice Reverts when a nullifier has already been registered
+    error RegisteredNullifier();
+
+    // ====================================================
+    // Events
+    // ====================================================
+
+    /// @notice Emitted when the registration phase is opened.
+    event RegistrationOpen();
+
+    /// @notice Emitted when the registration phase is closed.
+    event RegistrationClose();
+
+
+    /// @notice Emitted when a user identifier is registered.
+    event UserIdentifierRegistered(uint256 indexed registeredUserIdentifier, uint256 indexed nullifier);
+
+
+
+    // ====================================================
+    // public/Public Functions
+    // ====================================================
+
+    /**
+     * @notice Updates the scope used for verification.
+     * @dev Only callable by the contract owner.
+     * @param newScope The new scope to set.
+     */
+    function setScope(uint256 newScope) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _setScope(newScope);
+    }
+
+    /**
+     * @notice Opens the registration phase for users.
+     * @dev Only callable by the contract owner.
+     */
+    function openRegistration() public onlyRole(DEFAULT_ADMIN_ROLE) {
+        isRegistrationOpen = true;
+        emit RegistrationOpen();
+    }
+
+    /**
+     * @notice Closes the registration phase.
+     * @dev Only callable by the contract owner.
+     */
+    function closeRegistration() public onlyRole(DEFAULT_ADMIN_ROLE) {
+        isRegistrationOpen = false;
+        emit RegistrationClose();
+    }
+
+    /**
+     * @notice Retrieves the expected proof scope.
+     * @return The scope value used for registration verification.
+     */
+    function getScope() public view returns (uint256) {
+        return _scope;
+    }
+
+    /**
+     * @notice Checks if a given address is registered.
+     * @param registeredAddress The address to check.
+     * @return True if the address is registered, false otherwise.
+     */
+    function isRegistered(address registeredAddress) public view returns (bool) {
+        return _registeredUserIdentifiers[uint256(uint160(registeredAddress))];
+    }
+
+   
+    /**
+    * @notice set the Self config Id
+    */
+    function setConfigId(bytes32 _configId) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _setConfigId(_configId);
+    }
+
+    function _setConfigId(bytes32 _configId) internal {
+        configId = _configId;
+    }
+
+    function getConfigId(
+        bytes32 destinationChainId,
+        bytes32 userIdentifier, 
+        bytes memory userDefinedData
+    ) public view override returns (bytes32) {
+        return configId;
+    }
+
+    // ====================================================
+    // Internal Functions
+    // ====================================================
+
+    // ====================================================
+    // Override Functions from SelfVerificationRoot
+    // ====================================================
+
+    /**
+     * @notice Hook called after successful verification - handles user registration
+     * @dev Validates registration conditions and registers the user for both E-Passport and EUID attestations
+     * @param output The verification output containing user data
+     */
+    function customVerificationHook(
+        ISelfVerificationRoot.GenericDiscloseOutputV2 memory output,
+        bytes memory /* userData */
+    ) internal override {
+        // Check if registration is open
+        if (!isRegistrationOpen) {
+            revert RegistrationNotOpen();
+        }
+
+        // Check if nullifier has already been registered
+        if (_nullifierToUserIdentifier[output.nullifier] != 0) {
+            revert RegisteredNullifier();
+        }
+
+        // Check if user identifier is valid
+        if (output.userIdentifier == 0) {
+            revert InvalidUserIdentifier();
+        }
+
+        // Check if user identifier has already been registered
+        if (_registeredUserIdentifiers[output.userIdentifier]) {
+            revert UserIdentifierAlreadyRegistered();
+        }
+
+                // Access verified data:
+        // output.userIdentifier - user's unique identifier
+        // output.name - verified name
+        // output.nationality - verified nationality
+        // output.dateOfBirth - verified birth date
+        // etc
+        
+        // Example: Simple verification check
+        _nullifierToUserIdentifier[output.nullifier] = output.userIdentifier;
+        _registeredUserIdentifiers[output.userIdentifier] = true;
+
+        // Emit registration event
+        emit UserIdentifierRegistered(output.userIdentifier, output.nullifier);
+    }
+
+    /*function changeUserIdentifierAddress(address newIdentifier) {
+        if (!_registeredUserIdentifiers[uint256(uint160(msg.sender))]) {
+            revert NotRegistered(msg.sender);
+        } else {
+            _registeredUserIdentifiers = uint256(uint160(msg.sender))
+        }
+    }*/
+
+
+}
+
+
+// File CMTAT/contracts/interfaces/tokenization/draft-IERC1404.sol
+
+// Original license: SPDX_License_Identifier: MPL-2.0
+
+pragma solidity ^0.8.20;
+
+/*
+* @dev Contrary to the ERC-1404,
+* this interface does not inherit directly from the ERC20 interface
+*/
+interface IERC1404 {
+
+    /**
+     * @notice Returns a uint8 code to indicate if a transfer is restricted or not
+     * @dev 
+     * See {ERC-1404}
+     * This function is where an issuer enforces the restriction logic of their token transfers. 
+     * Some examples of this might include:
+     * - checking if the token recipient is whitelisted, 
+     * - checking if a sender's tokens are frozen in a lock-up period, etc.
+     * @return uint8 restricted code, 0 means the transfer is authorized
+     *
+     */
+    function detectTransferRestriction(
+        address from,
+        address to,
+        uint256 value
+    ) external view returns (uint8);
+
+
+    /**
+     * @dev See {ERC-1404}
+     * This function is effectively an accessor for the "message", 
+     * a human-readable explanation as to why a transaction is restricted. 
+     *
+     */
+    function messageForTransferRestriction(
+        uint8 restrictionCode
+    ) external view returns (string memory);
+}
+
+/**
+* @title IERC1404 with custom related extensions
+*/
+interface IERC1404Extend is IERC1404{
+    /* 
+    * @dev leave the code 6-9 free/unused for further CMTAT additions in your ruleEngine implementation
+    */
+    enum REJECTED_CODE_BASE {
+        TRANSFER_OK,
+        TRANSFER_REJECTED_PAUSED,
+        TRANSFER_REJECTED_FROM_FROZEN,
+        TRANSFER_REJECTED_TO_FROZEN,
+        TRANSFER_REJECTED_SPENDER_FROZEN,
+        TRANSFER_REJECTED_FROM_INSUFFICIENT_ACTIVE_BALANCE
+    }
+
+    /**
+     * @notice Returns a uint8 code to indicate if a transfer is restricted or not
+     * @dev 
+     * See {ERC-1404}
+     * Add an additionnal argument `spender`
+     * This function is where an issuer enforces the restriction logic of their token transfers. 
+     * Some examples of this might include:
+     * - checking if the token recipient is whitelisted, 
+     * - checking if a sender's tokens are frozen in a lock-up period, etc.
+     * @return uint8 restricted code, 0 means the transfer is authorized
+     *
+     */
+    function detectTransferRestrictionFrom(
+        address spender,
+        address from,
+        address to,
+        uint256 value
+    ) external view returns (uint8);
+}
+
+
+// File lib/IRuleValidation.sol
+
+// Original license: SPDX_License_Identifier: MPL-2.0
+
+pragma solidity ^0.8.20;
+
+
+interface IRuleValidation is IERC1404Extend, IERC7551Compliance {
+    /**
+     * @dev Returns true if the restriction code exists, and false otherwise.
+     */
+    function canReturnTransferRestrictionCode(
+        uint8 _restrictionCode
+    ) external view returns (bool);
+
+    function detectTransferRestrictionFrom(
+        address spender,
+        address _from,
+        address _to,
+        uint256 _amount
+    ) external view override returns (uint8);
+
+}
+
+
+// File lib/RuleValidateTransfer.sol
+
+// Original license: SPDX_License_Identifier: MPL-2.0
+
+pragma solidity ^0.8.20;
+
+
+abstract contract RuleValidateTransfer is IRuleValidation {
+    /**
+     * @notice Validate a transfer
+     * @param _from the origin address
+     * @param _to the destination address
+     * @param _amount to transfer
+     * @return isValid => true if the transfer is valid, false otherwise
+     **/
+    function canTransfer(
+        address _from,
+        address _to,
+        uint256 _amount
+    ) public view override returns (bool isValid) {
+        // does not work without `this` keyword => "Undeclared identifier"
+        return
+            this.detectTransferRestriction(_from, _to, _amount) ==
+            uint8(REJECTED_CODE_BASE.TRANSFER_OK);
+    }
+
+    function canTransferFrom(
+        address spender,
+        address from,
+        address to,
+        uint256 value
+    ) public view virtual override returns (bool) {
+        return this.detectTransferRestrictionFrom(spender, from, to, value)  ==
+            uint8(REJECTED_CODE_BASE.TRANSFER_OK);
+    }
+}
+
+
+// File contracts/RuleSelf.sol
+
+// Original license: SPDX_License_Identifier: MIT
+pragma solidity ^0.8.28;
+
+
+/**
+ * @title RuleSelf (Experimental)
+ * @notice This contract manages a RuleEngine Transfer Rule by verifying user registrations with zero‐knowledge proofs
+ *         supporting both E-Passport and EU ID Card attestations.
+ *         It is provided for testing and demonstration purposes only.
+ *         **WARNING:** This contract has not been audited and is NOT intended for production use.
+ * @dev Inherits from RuleSelfVerification
+ */
+contract RuleSelf is RuleSelfVerification,  RuleValidateTransfer {
+    /* ============ String message ============ */
+    // Text
+    string constant TEXT_CODE_NOT_FOUND = "Unknown restriction code";
+    string constant TEXT_ADDRESS_FROM_IS_NOT_REGISTERED =
+        "The sender is not registered";
+    string constant TEXT_ADDRESS_TO_IS_NOT_REGISTERED =
+        "The recipient is notregistered";
+
+    /* ============ Code ============ */
+    // It is very important that each rule uses an unique code
+    uint8 public constant CODE_ADDRESS_FROM_IS_NOT_REGISTERED = 61;
+    uint8 public constant CODE_ADDRESS_TO_IS_NOT_REGISTERED = 62;
+
+    // ====================================================
+    // Constructor
+    // ====================================================
+    /**
+     * @notice Constructor for the experimental Airdrop V2 contract.
+     * @dev Initializes the airdrop parameters, zero-knowledge verification configuration,
+     *      and sets the ERC20 token to be distributed. Supports both E-Passport and EUID attestations.
+     * @param identityVerificationHubAddress The address of the Identity Verification Hub V2.
+     * @param scopeValue The expected proof scope for user registration.
+     */
+    constructor(
+        address identityVerificationHubAddress,
+        bytes32 configId_,
+        uint256 scopeValue
+    ) SelfVerificationRoot(identityVerificationHubAddress, scopeValue) {
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setConfigId(configId_);
+    }
+    
+
+    /**
+     * @notice Check if an addres is in the whitelist or not
+     * @param from the origin address
+     * @param to the destination address
+     * @return The restricion code or REJECTED_CODE_BASE.TRANSFER_OK
+     **/
+    function detectTransferRestriction(
+        address from,
+        address to,
+        uint256 /*_amount */
+    ) public view override returns (uint8) {
+         if (!_registeredUserIdentifiers[uint256(uint160(from))]) {
+           return uint8(CODE_ADDRESS_FROM_IS_NOT_REGISTERED);
+        } else if (!_registeredUserIdentifiers[uint256(uint160(to))]){
+            return uint8(CODE_ADDRESS_TO_IS_NOT_REGISTERED);
+        }
+        return uint8(REJECTED_CODE_BASE.TRANSFER_OK);
+    }
+
+
+    function detectTransferRestrictionFrom(
+        address /*spender*/,
+        address _from,
+        address _to,
+        uint256 _amount
+    ) public view override returns (uint8) {
+        return detectTransferRestriction(_from,_to,_amount);
+    }
+
+    /**
+     * @notice To know if the restriction code is valid for this rule or not.
+     * @param _restrictionCode The target restriction code
+     * @return true if the restriction code is known, false otherwise
+     **/
+    function canReturnTransferRestrictionCode(
+        uint8 _restrictionCode
+    ) external pure override returns (bool) {
+        return
+            _restrictionCode == CODE_ADDRESS_FROM_IS_NOT_REGISTERED ||
+            _restrictionCode == CODE_ADDRESS_TO_IS_NOT_REGISTERED;
+    }
+
+    /**
+     * @notice Return the corresponding message
+     * @param _restrictionCode The target restriction code
+     * @return true if the transfer is valid, false otherwise
+     **/
+    function messageForTransferRestriction(
+        uint8 _restrictionCode
+    ) external pure override returns (string memory) {
+        if (_restrictionCode == CODE_ADDRESS_FROM_IS_NOT_REGISTERED) {
+            return TEXT_ADDRESS_FROM_IS_NOT_REGISTERED;
+        } else if (_restrictionCode == CODE_ADDRESS_TO_IS_NOT_REGISTERED) {
+            return TEXT_ADDRESS_TO_IS_NOT_REGISTERED;
+        } else {
+            return TEXT_CODE_NOT_FOUND;
+        }
+    }
+
+    /* ============ ACCESS CONTROL ============ */
+    /**
+     * @dev Returns `true` if `account` has been granted `role`.
+     */
+    function hasRole(
+        bytes32 role,
+        address account
+    ) public view virtual override(AccessControl) returns (bool) {
+        // The Default Admin has all roles
+        if (AccessControl.hasRole(DEFAULT_ADMIN_ROLE, account)) {
+            return true;
+        }
+        return AccessControl.hasRole(role, account);
+    }
+}

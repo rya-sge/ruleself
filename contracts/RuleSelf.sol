@@ -36,12 +36,11 @@ contract RuleSelf is RuleSelfVerification,  RuleValidateTransfer {
      * @param scopeValue The expected proof scope for user registration.
      */
     constructor(
-        address admin,
         address identityVerificationHubAddress,
         bytes32 configId_,
         uint256 scopeValue
     ) SelfVerificationRoot(identityVerificationHubAddress, scopeValue) {
-        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setConfigId(configId_);
     }
     

@@ -1,31 +1,75 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
-// will compile your contracts, add the Hardhat Runtime Environment's members to the
-// global scope, and execute the script.
 const hre = require("hardhat");
+require("dotenv").config();
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+  console.log("Deploying SelfRule contract...");
 
-  const lockedAmount = hre.ethers.utils.parseEther("1");
+  const mockScope = 1; // unless you use create2 and know the address of the contract before deploying, use a mock scope and update it after deployment.
+  // see https://tools.self.xyz to compute the real value of the scope will set after deployment.
+  const hubAddress = process.env.IDENTITY_VERIFICATION_HUB;
+  const verificationConfigId = process.env.VERIFICATION_CONFIG_ID;
 
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  console.log("Using IdentityVerificationHub at:", hubAddress);
+  console.log("Using VerificationConfigId at:", verificationConfigId);
+  // Deploy the contract
+  const ProofOfHuman = await hre.ethers.getContractFactory("RuleSelf");
+  const proofOfHuman = await ProofOfHuman.deploy(hubAddress, verificationConfigId, mockScope );
 
-  await lock.deployed();
+  await proofOfHuman.waitForDeployment();
+  const contractAddress = await proofOfHuman.getAddress();
 
-  console.log(
-    `Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
+  console.log("ProofOfHuman deployed to:", contractAddress);
+  console.log("Network:", hre.network.name);
+
+  // Wait for a few block confirmations
+  console.log("Waiting for block confirmations...");
+  await proofOfHuman.deploymentTransaction().wait(5);
+
+  // Verify the contract on Celoscan
+  if (hre.network.name === "alfajores" && process.env.CELOSCAN_API_KEY) {
+    console.log("Verifying contract on Celoscan...");
+    try {
+      await hre.run("verify:verify", {
+        address: contractAddress,
+        constructorArguments: [hubAddress, mockScope, verificationConfigId],
+        network: "alfajores"
+      });
+      console.log("Contract verified successfully!");
+    } catch (error) {
+      console.log("Verification failed:", error.message);
+      if (error.message.includes("already verified")) {
+        console.log("Contract was already verified.");
+      }
+    }
+  } else if (!process.env.CELOSCAN_API_KEY) {
+    console.log("Skipping verification: CELOSCAN_API_KEY not found in environment");
+  }
+
+  // Save deployment info
+  const fs = require("fs");
+  const deploymentInfo = {
+    network: hre.network.name,
+    contractAddress: contractAddress,
+    hubAddress: hubAddress,
+    deployedAt: new Date().toISOString(),
+    deployer: (await hre.ethers.provider.getSigner()).address
+  };
+
+  fs.writeFileSync(
+    "./deployments/latest.json",
+    JSON.stringify(deploymentInfo, null, 2)
   );
+
+  console.log("\nDeployment complete!");
+  console.log("Contract address:", contractAddress);
+  console.log("\nNext steps:");
+  console.log("1. Update NEXT_PUBLIC_SELF_ENDPOINT in app/.env");
+  console.log("2. Go to https://tools.self.xyz, generate the scope and update it in your contract");
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
