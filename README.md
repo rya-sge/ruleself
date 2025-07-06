@@ -42,13 +42,15 @@ Self can be relevant to apply transfers restrictions on a token representing a f
 - [CMTAT](https://github.com/CMTA/CMTAT/) is a security token framework that includes various compliance features such as conditional transfer, account freeze, and token pause. By the past, CMTAT has been used by several different companies such as Taurus SA, UBS (Project Guardian), obligate (on-chain bond and dividend) and many others.
 - [RuleEngine](https://github.com/CMTA/RuleEngine/)  is an external contract used to apply transfer restrictions to another contract, initially the CMTAT. Acting as a controller, it can call different contract rules and apply these rules on each transfer.
 
+These two contracts use [ERC-1404](https://github.com/ethereum/EIPs/issues/1404) (draft ERC) to provide human-readable message and error code if a transfer is restricted
+
 ### Goal of this project
 
 The project aims to provide a rule called `RuleSelf` to allow an issuer to restrict transfers of a CMTAT token deployed by using some propreties of a passport.
 
 Typically, it will be possible to forbid transfer to address present on OFAC sanction list.
 
-During this hackaton, unfortunataly, only the Rule was deployed and no integration testing has been done with CMTAT and RuleEngine.
+During this hackaton, unfortunataly, only the `Rule` was deployed and no integration testing has been done with `CMTAT` and `RuleEngine`.
 
 
 
@@ -371,7 +373,15 @@ The contract `RuleSelf` is deployed on Celo testnet at the following address: [0
 
 First `Verify Self Proof` function calls: https://alfajores.celoscan.io/tx/0xac3ca7de3bd89a5223b6fb55a318942aa5e5576b9afc73c12ff3c635edcfa7f6
 
+### After first registration (from)
 
+We can see that the transfer is denied because the recipient `to`is not registered.
+
+![messageForTransferRestriction](./assets/messageForTransferRestriction.png)
+
+![detectTransferRestriction](./assets/detectTransferRestriction.png)
+
+![canTransfer](./assets/canTransfer.png)
 
 
 
